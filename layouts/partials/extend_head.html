@@ -12,3 +12,8 @@
     throwOnError: false
   });"></script>
 {{- end }}
+
+{{- if eq hugo.Environment "production" }}
+<script data-goatcounter="https://minahabib.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+{{- end }}
