@@ -30,7 +30,7 @@ pygmentsUseClasses = true
 
   [params.homeInfoParams]
     Title = "Hi, I'm Mina"
-    Content = "Senior Data Scientist. I write here about forecasting, modeling, and the problems I work on."
+    Content = "Senior Data Scientist. I build machine learning models, with a soft spot for forecasting. I write here about the work and what I'm figuring out."
 
   [[params.socialIcons]]
     name = "github"
