@@ -37,7 +37,7 @@ pygmentsUseClasses = true
     url = "https://github.com/Gr0d3N"
   [[params.socialIcons]]
     name = "linkedin"
-    url = "https://www.linkedin.com/"
+    url = "https://www.linkedin.com/in/mina-habib/"
   [[params.socialIcons]]
     name = "rss"
     url = "index.xml"
