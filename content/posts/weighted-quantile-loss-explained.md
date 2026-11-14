@@ -93,9 +93,9 @@ for a 90th percentile, running short is the expensive mistake.
   volume normalization, so a handful of large series can swamp it and you can't
   compare across datasets of different scale.
 
-The short version: MAE, RMSE, MAPE and WAPE all grade a single number. WQL grades
-a *distribution* — it checks whether your forecast's percentiles are honest — and
-it does it in a volume-aware way.
+The short version. MAE, RMSE, MAPE and WAPE all grade a single number. WQL grades
+a *distribution*. It checks whether your forecast's percentiles are honest, and it
+does that in a volume-aware way.
 
 ## When to use it
 
@@ -103,12 +103,12 @@ Reach for WQL when all three are true:
 
 1. You produce probabilistic forecasts (percentiles or a full distribution), not
    just one number.
-2. The cost of being wrong is asymmetric — running out hurts more than
+2. The cost of being wrong is asymmetric. Running out hurts more than
    overstocking, or the reverse.
 3. Volume varies a lot across items and you want the metric to care
    proportionally.
 
-If you only have a point forecast, WQL has nothing extra to offer — use WAPE or
+If you only have a point forecast, WQL has nothing extra to offer, so use WAPE or
 MAE. And it's worth tracking more than one quantile (say the 50th and the 90th):
 the 50th tells you if the forecast is centered, the 90th tells you if the tail is
 calibrated.
