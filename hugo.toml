@@ -8,6 +8,14 @@ buildDrafts = false
 buildFuture = false
 pygmentsUseClasses = true
 
+[author]
+  name = "Mina Habib"
+
+[sitemap]
+  changefreq = "weekly"
+  priority = 0.5
+  filename = "sitemap.xml"
+
 [pagination]
   pagerSize = 10
 
@@ -17,8 +25,10 @@ pygmentsUseClasses = true
 
 [params]
   env = "production"
+  author = "Mina Habib"
   title = "Mina Habib"
-  description = "Writing on data science, forecasting, and the things I'm figuring out."
+  description = "Mina Habib, Senior Data Scientist. Writing on machine learning, forecasting, and time series analysis."
+  keywords = ["Mina Habib", "data science", "machine learning", "forecasting", "time series", "quantile loss"]
   defaultTheme = "auto"
   ShowReadingTime = true
   ShowShareButtons = false
@@ -27,6 +37,7 @@ pygmentsUseClasses = true
   ShowCodeCopyButtons = true
   ShowToc = true
   TocOpen = false
+  ShowFullTextinRSS = true
 
   [params.homeInfoParams]
     Title = "Hi, I'm Mina"
