@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Forecasting on Mina Habib</title>
+    <link>http://localhost:1313/tags/forecasting/</link>
+    <description>Recent content in Forecasting on Mina Habib</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 14 Nov 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/forecasting/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Weighted Quantile Loss, explained</title>
+      <link>http://localhost:1313/posts/weighted-quantile-loss-explained/</link>
+      <pubDate>Sat, 14 Nov 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/weighted-quantile-loss-explained/</guid>
+      <description>What weighted quantile loss measures, its formula, a worked example, and how it stacks up against MAE, RMSE, MAPE, WAPE, and plain quantile loss.</description>
+      <content:encoded><![CDATA[<p>Most forecast accuracy metrics answer one question: how far off was the
+prediction? Weighted quantile loss answers a different one. It asks whether your
+forecast got the <em>uncertainty</em> right, and it cares more about the items that
+matter.</p>
+<p>That makes it a good fit for demand forecasting, where you rarely want a single
+number. You want a range, and you want to be more careful about the products
+that move a lot of volume.</p>
+<h2 id="the-intuition">The intuition</h2>
+<p>Start with a single prediction. Say you forecast demand for next week and you
+want the 90th percentile, the level you&rsquo;ll only exceed 10% of the time. Useful
+for setting stock so you rarely run out.</p>
+<p>If the real demand comes in <em>above</em> your forecast, that&rsquo;s bad. You under-stocked.
+If it comes in <em>below</em>, that&rsquo;s also not free, but it&rsquo;s a different kind of wrong.
+Quantile loss lets you penalize those two mistakes by different amounts,
+depending on which percentile you asked for.</p>
+<p>For the 90th percentile, being too low is penalized nine times harder than being
+too high. That asymmetry is the whole point: it pushes the forecast up until,
+over many weeks, it lands above the truth about 90% of the time. Exactly what a
+90th percentile should do.</p>
+<h2 id="one-formula">One formula</h2>
+<p>For a single actual value $y$, a forecast $q$ at quantile level $\tau$ (a number
+between 0 and 1), the quantile loss is:</p>
+<p>$$
+\mathrm{QL}_\tau(y, q) = \max\big(\tau,(y - q),; (\tau - 1),(y - q)\big)
+$$</p>
+<p>Read it as two cases:</p>
+<ul>
+<li>If you under-forecast ($y &gt; q$): the loss is $\tau,(y - q)$.</li>
+<li>If you over-forecast ($y &lt; q$): the loss is $(1 - \tau),(q - y)$.</li>
+</ul>
+<p>At $\tau = 0.9$, under-forecasting costs 0.9 per unit and over-forecasting costs
+0.1 per unit. Nine to one.</p>
+<p><strong>Weighted</strong> quantile loss then sums this over all items and all time, and
+divides by total actual volume so big and small series can sit in the same
+number:</p>
+<p>$$
+\mathrm{WQL}(\tau) = \frac{\sum_i \mathrm{QL}_\tau(y_i, q_i)}{\sum_i |y_i|}
+$$</p>
+<p>The division is what makes it &ldquo;weighted&rdquo;: items with more volume contribute more
+to both the numerator and the denominator, so the metric naturally pays more
+attention to them. A high-volume product being off matters more than a tiny one
+being off by the same percentage.</p>
+<h2 id="a-tiny-worked-example">A tiny worked example</h2>
+<p>One item, one week. You forecast the 90th percentile as $q = 100$.</p>
+<ul>
+<li>Actual comes in at $y = 130$ (you under-forecast by 30). Loss $= 0.9 \times 30 = 27$.</li>
+<li>Different week, actual comes in at $y = 80$ (you over-forecast by 20). Loss $= 0.1 \times 20 = 2$.</li>
+</ul>
+<p>Same size miss in units, very different penalty. The metric is telling you that
+for a 90th percentile, running short is the expensive mistake.</p>
+<h2 id="how-it-compares-to-the-usual-metrics">How it compares to the usual metrics</h2>
+<ul>
+<li><strong>MAE</strong> (mean absolute error) averages the size of the miss. Simple and robust,
+but it only scores a single point forecast, and it treats over and under the
+same. No notion of a quantile.</li>
+<li><strong>RMSE</strong> (root mean squared error) squares the errors first, so a few big
+misses dominate. Good when large errors are especially costly, but sensitive to
+outliers and, again, point-only and symmetric.</li>
+<li><strong>MAPE</strong> (mean absolute percentage error) divides each error by the actual.
+Easy to explain as a percentage, but it blows up when actuals are near zero,
+and it quietly over-weights low-volume items. In intermittent demand it can be
+useless or undefined.</li>
+<li><strong>WAPE</strong> (weighted absolute percentage error) fixes MAPE&rsquo;s main flaw by
+dividing total error by total actual volume, so it&rsquo;s volume-weighted and stable
+near zero. It&rsquo;s basically WQL&rsquo;s median sibling: WAPE lines up with WQL at
+$\tau = 0.5$ up to a scale factor. But it still scores one point forecast, not
+a range.</li>
+<li><strong>Quantile loss</strong> (unweighted) has the asymmetry WQL has, but without the
+volume normalization, so a handful of large series can swamp it and you can&rsquo;t
+compare across datasets of different scale.</li>
+</ul>
+<p>The short version. MAE, RMSE, MAPE and WAPE all grade a single number. WQL grades
+a <em>distribution</em>. It checks whether your forecast&rsquo;s percentiles are honest, and it
+does that in a volume-aware way.</p>
+<h2 id="when-to-use-it">When to use it</h2>
+<p>Reach for WQL when all three are true:</p>
+<ol>
+<li>You produce probabilistic forecasts (percentiles or a full distribution), not
+just one number.</li>
+<li>The cost of being wrong is asymmetric. Running out hurts more than
+overstocking, or the reverse.</li>
+<li>Volume varies a lot across items and you want the metric to care
+proportionally.</li>
+</ol>
+<p>If you only have a point forecast, WQL has nothing extra to offer, so use WAPE or
+MAE. And it&rsquo;s worth tracking more than one quantile (say the 50th and the 90th):
+the 50th tells you if the forecast is centered, the 90th tells you if the tail is
+calibrated.</p>
+]]></content:encoded>
+    </item>
+  </channel>
+</rss>

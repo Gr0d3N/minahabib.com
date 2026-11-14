@@ -1,0 +1,74 @@
+baseURL = "https://www.minahabib.com/"
+languageCode = "en-us"
+title = "Mina Habib"
+theme = "PaperMod"
+
+enableRobotsTXT = true
+buildDrafts = false
+buildFuture = false
+pygmentsUseClasses = true
+
+[author]
+  name = "Mina Habib"
+
+[sitemap]
+  changefreq = "weekly"
+  priority = 0.5
+  filename = "sitemap.xml"
+
+[pagination]
+  pagerSize = 10
+
+[minify]
+  disableXML = true
+  minifyOutput = true
+
+[params]
+  env = "production"
+  author = "Mina Habib"
+  title = "Mina Habib"
+  description = "Mina Habib, Senior Data Scientist. Writing on machine learning, forecasting, and time series analysis."
+  keywords = ["Mina Habib", "data science", "machine learning", "forecasting", "time series", "quantile loss"]
+  defaultTheme = "auto"
+  ShowReadingTime = true
+  ShowShareButtons = false
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+  ShowToc = true
+  TocOpen = false
+  ShowFullTextinRSS = true
+
+  [params.homeInfoParams]
+    Title = "Hi, I'm Mina"
+    Content = "Senior Data Scientist. I build machine learning models, with a soft spot for forecasting. I write here about the work and what I'm figuring out."
+
+  [[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/Gr0d3N"
+  [[params.socialIcons]]
+    name = "linkedin"
+    url = "https://www.linkedin.com/in/mina-habib/"
+  [[params.socialIcons]]
+    name = "rss"
+    url = "index.xml"
+
+[menu]
+  [[menu.main]]
+    identifier = "posts"
+    name = "Blog"
+    url = "/posts/"
+    weight = 10
+  [[menu.main]]
+    identifier = "about"
+    name = "About"
+    url = "/about/"
+    weight = 20
+  [[menu.main]]
+    identifier = "search"
+    name = "Search"
+    url = "/search/"
+    weight = 30
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
