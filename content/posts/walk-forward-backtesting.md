@@ -19,6 +19,23 @@ then the model falls apart in production, where the future is not available.
 
 Walk-forward backtesting fixes this by respecting time.
 
+## A quick illustration
+
+Here is the gap, on a synthetic weekly demand series (made-up data, not from any
+real business, just to show the effect). Take one model and score it two ways.
+
+| Scoring method | Error (MAE) |
+|---|---|
+| Random train/test split | 5.15 |
+| Walk-forward backtesting | 6.34 |
+
+Same model, same data. The random split reports an error about 19% lower than
+walk-forward. That lower number is a lie: it comes from letting the model peek at
+future weeks during training. Walk-forward's higher number is the one you would
+actually live with in production. The flattery is largest exactly when it hurts
+most, when the model is flexible enough to overfit and the series drifts over
+time.
+
 ## The idea
 
 Always train on the past and test on the future that follows it. Then slide
@@ -108,9 +125,30 @@ and know you are testing a slightly staler model than the per-fold ideal.
 forecasts 4 weeks out, scoring 1-week-ahead folds flatters the model. Shorter
 horizons are almost always easier.
 
+## How to choose the setup
+
+The mechanics are simple; the judgment is in the settings. Some rules of thumb:
+
+- **How many folds.** Enough that the average is stable, not so many that each
+  test window is tiny. For a few years of weekly data, 4 to 8 folds is a sensible
+  range. If adding a fold swings your average a lot, you have too few.
+- **How long a test window.** Match it to the horizon you actually forecast. If
+  you forecast a quarter ahead, test on quarter-long windows. Testing on windows
+  shorter than your real horizon flatters the model.
+- **Expanding vs sliding.** Expanding when the process is stable and old data
+  still helps. Sliding when behaviour drifts and old patterns mislead. When
+  unsure, run both and compare; if sliding wins clearly, your series is drifting.
+- **When data is short.** With little history, you cannot afford many folds.
+  Use one or two, keep an expanding window so each fold trains on as much as
+  possible, and treat the result as a rough read, not a precise score.
+
 ## Why it is worth the trouble
 
 A random split answers a question nobody asked: can the model interpolate inside
 a period it has already partly seen. Walk-forward answers the real one: given
 only the past, how well does the model predict what comes next. The second number
 is lower. It is also the one that matches what happens after you ship.
+
+What you score inside each fold matters as much as the folds themselves. For
+demand forecasts, [weighted quantile loss](/posts/weighted-quantile-loss-explained/)
+is often the right error measure to average across them.

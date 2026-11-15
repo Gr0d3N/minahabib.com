@@ -38,16 +38,19 @@ For a single actual value $y$, a forecast $q$ at quantile level $\tau$ (a number
 between 0 and 1), the quantile loss is:
 
 $$
-\mathrm{QL}_\tau(y, q) = \max\big(\tau\,(y - q),\; (\tau - 1)\,(y - q)\big)
+\mathrm{QL}_\tau(y, q) = \max\big(\tau \cdot (y - q),\ \ (\tau - 1) \cdot (y - q)\big)
 $$
 
 Read it as two cases:
 
-- If you under-forecast ($y > q$): the loss is $\tau\,(y - q)$.
-- If you over-forecast ($y < q$): the loss is $(1 - \tau)\,(q - y)$.
+- If you under-forecast ($y > q$): the loss is $\tau \cdot (y - q)$.
+- If you over-forecast ($y < q$): the loss is $(1 - \tau) \cdot (q - y)$.
 
 At $\tau = 0.9$, under-forecasting costs 0.9 per unit and over-forecasting costs
 0.1 per unit. Nine to one.
+
+(You will also see quantile loss called **pinball loss**. Same thing: plot the
+loss against the forecast and it has a kinked, pinball-table shape.)
 
 **Weighted** quantile loss then sums this over all items and all time, and
 divides by total actual volume so big and small series can sit in the same
@@ -67,14 +70,34 @@ being off by the same percentage.
 One item, one week. You forecast the 90th percentile as $q = 100$.
 
 - Actual comes in at $y = 130$ (you under-forecast by 30). Loss $= 0.9 \times 30 = 27$.
-- Different week, actual comes in at $y = 80$ (you over-forecast by 20). Loss $= 0.1 \times 20 = 2$.
+- Different week, actual comes in at $y = 70$ (you over-forecast by 30). Loss $= 0.1 \times 30 = 3$.
 
 Same size miss in units, very different penalty. The metric is telling you that
 for a 90th percentile, running short is the expensive mistake.
 
+## Why the "weighted" part matters
+
+Now two items, to see the weighting work (again, illustrative numbers). Both
+under-forecast by the same 10%, at $\tau = 0.9$:
+
+- **High-volume item:** actual $y = 1000$, forecast $q = 900$. QL $= 0.9 \times 100 = 90$.
+- **Low-volume item:** actual $y = 100$, forecast $q = 90$. QL $= 0.9 \times 10 = 9$.
+
+If you just averaged the two losses, you would get $(90 + 9)/2 = 49.5$, treating
+both items as equals. WQL instead divides the total loss by the total volume:
+
+$$
+\mathrm{WQL} = \frac{90 + 9}{1000 + 100} = \frac{99}{1100} = 0.09
+$$
+
+The high-volume item contributes 90 of the 99 total, about 91%. Same percentage
+error on both, but the big item drives almost the entire score. That is the point:
+WQL cares most about getting the high-volume items right, which is usually exactly
+what the business cares about too.
+
 ## How it compares to the usual metrics
 
-- **MAE** (mean absolute error) averages the size of the miss. Simple and robust,
+- **MAE** (mean absolute error) averages the size of the miss. Simple and steady,
   but it only scores a single point forecast, and it treats over and under the
   same. No notion of a quantile.
 - **RMSE** (root mean squared error) squares the errors first, so a few big
@@ -109,6 +132,26 @@ Reach for WQL when all three are true:
    proportionally.
 
 If you only have a point forecast, WQL has nothing extra to offer, so use WAPE or
-MAE. And it's worth tracking more than one quantile (say the 50th and the 90th):
-the 50th tells you if the forecast is centered, the 90th tells you if the tail is
-calibrated.
+MAE.
+
+## Choosing tau, and two pitfalls
+
+**Pick tau from the cost, not the default.** The quantile you score should match
+the decision. If running out is much worse than overstocking, you care about a
+high quantile like the 90th, so score there. A symmetric decision scores the
+50th. Do not score the 90th out of habit if your actual trade-off is balanced.
+
+**WQL alone does not prove good coverage.** A low WQL says the forecast is
+sharp and roughly right, but it does not guarantee that your "90th percentile"
+actually sits above the truth 90% of the time. Check calibration separately:
+over many weeks, how often did actuals fall below each quantile? A metric and a
+coverage check answer different questions.
+
+**Track more than one quantile.** Score at least the 50th and the 90th. The 50th
+tells you if the forecast is centered; the 90th tells you if the tail is
+calibrated. A model can look fine at the median and badly miss the tail that
+drives your safety stock.
+
+One more thing: a single WQL number is only as honest as the way you measured it.
+Score it with [walk-forward backtesting](/posts/walk-forward-backtesting/),
+averaging over many time folds, rather than on one lucky slice of history.
