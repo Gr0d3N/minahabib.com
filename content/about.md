@@ -7,6 +7,8 @@ ShowReadingTime: false
 ShowBreadCrumbs: false
 ---
 
+{{< figure src="/images/mina.jpg" alt="Mina Habib" width="300" align="center" >}}
+
 I'm Mina Habib, a Senior Data Scientist with more than 16 years in the industry.
 I studied engineering at Cairo University in Egypt, and I've spent most of my
 career since then building machine learning models of all kinds. Forecasting and
