@@ -98,6 +98,11 @@ This is the classic newsvendor result. If a lost sale costs nine times what an
 extra unit on the shelf costs, $\tau^* = 9 / (9 + 1) = 0.9$, so you plan at P90.
 If the two costs are equal, you plan at P50.
 
+This is a single-period result, and it treats leftovers as worthless. In a
+rolling weekly system, leftovers carry into next week, so the true cost of
+overstocking is closer to a week of holding cost than to the unit's full price,
+which means the right level is usually a bit higher than the formula gives.
+
 That nine to one ratio is the same one behind the 90th percentile in
 [weighted quantile loss](/posts/weighted-quantile-loss-explained/). The metric
 and the decision rule are two views of the same trade-off, which is why scoring
