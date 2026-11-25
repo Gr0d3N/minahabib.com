@@ -9,12 +9,12 @@ summary: "What weighted quantile loss measures, its formula, a worked example, a
 
 Most forecast accuracy metrics answer one question: how far off was the
 prediction? Weighted quantile loss answers a different one. It asks whether your
-forecast got the *uncertainty* right, and it cares more about the items that
-matter.
+forecast got the *uncertainty* right, and it puts big and small items on one
+scale.
 
 That makes it a good fit for demand forecasting, where you rarely want a single
-number. You want a range, and you want to be more careful about the products
-that move a lot of volume.
+number. You want a range, and you want one score that works across products of
+very different size.
 
 ## The intuition
 
@@ -60,10 +60,11 @@ $$
 \mathrm{WQL}(\tau) = \frac{\sum_i \mathrm{QL}_\tau(y_i, q_i)}{\sum_i |y_i|}
 $$
 
-The division is what makes it "weighted": items with more volume contribute more
-to both the numerator and the denominator, so the metric naturally pays more
-attention to them. A high-volume product being off matters more than a tiny one
-being off by the same percentage.
+The division is what people mean by "weighted", though strictly it is a
+normalization. Each item's loss goes into the sum as is, with no weight
+attached. Dividing by total volume just turns the total loss into a share of
+total demand. Big items still end up counting more, because their misses are
+bigger in units, so they put more loss into the numerator.
 
 ## A tiny worked example
 
@@ -91,8 +92,9 @@ $$
 $$
 
 The high-volume item contributes 90 of the 99 total, about 91%. Same percentage
-error on both, but the big item drives almost the entire score. That is the point:
-WQL cares most about getting the high-volume items right, which is usually exactly
+error on both, but the big item drives almost the entire score. Nothing weighted
+it up. Its miss is simply ten times bigger in units. In practice that means WQL
+mostly reflects how well you forecast the high-volume items, which is usually
 what the business cares about too.
 
 ## How it compares to the usual metrics
@@ -128,8 +130,8 @@ Reach for WQL when all three are true:
    just one number.
 2. The cost of being wrong is asymmetric. Running out hurts more than
    overstocking, or the reverse.
-3. Volume varies a lot across items and you want the metric to care
-   proportionally.
+3. Volume varies a lot across items and you want one score that is stable
+   across them and comparable between datasets.
 
 If you only have a point forecast, WQL has nothing extra to offer, so use WAPE or
 MAE. For when a range is worth producing in the first place, and how to read
