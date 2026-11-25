@@ -106,7 +106,10 @@ a forecast at the quantile you will actually use makes sense.
 In practice, different teams read different quantiles off the same forecast:
 
 - **Safety stock and service levels:** a high quantile, like P90.
-- **Labor, transport, and capacity plans:** usually P50, the typical week.
+- **Labor and transport plans:** often P50, the typical week, when gaps can be
+  patched with overtime or extra trucks.
+- **Capacity plans (space, sites, peak):** a higher quantile, since running
+  short is slow and costly to fix.
 - **Financial plans and revenue:** the mean or P50, depending on the convention.
 - **Downside and risk planning:** a low quantile, like P10.
 
