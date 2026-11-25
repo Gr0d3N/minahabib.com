@@ -132,7 +132,8 @@ Reach for WQL when all three are true:
    proportionally.
 
 If you only have a point forecast, WQL has nothing extra to offer, so use WAPE or
-MAE.
+MAE. For when a range is worth producing in the first place, and how to read
+one, see [point vs distributional forecasts](/posts/point-vs-distributional-forecasts/).
 
 ## Choosing tau, and two pitfalls
 

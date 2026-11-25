@@ -138,7 +138,8 @@ Score comparisons like this with
 [walk-forward backtesting](/posts/walk-forward-backtesting/) so the numbers
 reflect real forward performance, and with a metric like
 [weighted quantile loss](/posts/weighted-quantile-loss-explained/) if you
-forecast ranges rather than points.
+forecast ranges rather than points (more on that choice in
+[point vs distributional forecasts](/posts/point-vs-distributional-forecasts/)).
 
 ## So which one
 
